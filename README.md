@@ -441,3 +441,30 @@ PDF 排版时，长标题会折成两行：
 > 知道"什么时候不需要用工具"，比会用工具更能体现你的判断力。
 >
 > 什么时候真的需要向量库？数据量到 10 万条以上、需要增量更新、需要多进程共享索引的时候。
+
+---
+
+## 附：上传到 GitHub（约 3 分钟）
+
+本项目已经在本地做好了 git 初始化并完成首次提交（分支 `main`），所以**不需要** `git init`。
+
+1. 到 github.com 新建一个**空仓库**，名字填 `rag-pdf`，可见性选 Public，
+   **README / .gitignore / License 三个勾全部不要打**（本地已有，线上再生成会冲突）。
+2. 在本项目目录执行（把 `你的用户名` 换成你的 GitHub 用户名）：
+
+```bash
+cd C:/Users/Sun/Desktop/workbuddy/rag-pdf
+git remote add origin https://github.com/你的用户名/rag-pdf.git
+git push -u origin main
+```
+
+3. 第一次 push 会弹出浏览器让你登录 GitHub，点一下授权即可，不用配密码或 token。
+
+**密钥安全**：`.env` 已被 `.gitignore` 排除，提交内容里只有 `.env.example` 模板，不含任何真实 Key。
+`data/`（索引）、`.venv/` 也已排除 —— 别人 clone 后用 `build_index.py` 自己重建即可。
+
+以后改了代码要再推：
+
+```bash
+git add -A && git commit -m "说明改了什么" && git push
+```
