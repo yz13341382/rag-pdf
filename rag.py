@@ -62,7 +62,8 @@ def load_config() -> dict:
         pass
 
     cfg = {
-        "pdf_path": os.getenv("PDF_PATH", r"C:\Users\Sun\Desktop\HowToLiveBetter.pdf"),
+        # 默认就是项目根目录下的同名 PDF；填绝对路径也行
+        "pdf_path": os.getenv("PDF_PATH", "HowToLiveBetter.pdf"),
         # 向量化用的服务（把文字变成数字）
         "embed_api_key": os.getenv("EMBEDDING_API_KEY", ""),
         "embed_base_url": os.getenv("EMBEDDING_BASE_URL", "https://api.siliconflow.cn/v1"),
@@ -106,8 +107,14 @@ def extract_pages(pdf_path: str | Path) -> list[str]:
     from pypdf import PdfReader
 
     pdf_path = Path(pdf_path)
+    # 相对路径一律按「项目根目录」解析，换台电脑、换个目录都能跑
+    if not pdf_path.is_absolute():
+        pdf_path = ROOT / pdf_path
     if not pdf_path.exists():
-        raise SystemExit(f"\n[找不到文件] {pdf_path}\n请检查 .env 里的 PDF_PATH 是否正确。\n")
+        raise SystemExit(
+            f"\n[找不到文件] {pdf_path}\n"
+            "请把 PDF 放到项目根目录，或改 .env 里的 PDF_PATH 指向它。\n"
+        )
 
     reader = PdfReader(str(pdf_path))
     pages = []

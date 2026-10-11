@@ -1,5 +1,8 @@
 # 📖 把 PDF 做成 RAG 问答助手
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+
 把《高性价比人生指南》（395 页 / 654 条建议）做成一个能提问的助手：
 问它"怎么预防蘑菇中毒""被裁了能拿多少钱"，它会**从这 654 条里挑出相关的**，
 读完再用人话回答你，并且**每句话都能点开核对原文**。
@@ -9,6 +12,10 @@
 - 为什么 RAG 的价值在"检索"而不是"生成"
 - 为什么切分策略决定了整个系统的上限
 - 怎么让大模型只依据资料回答、不瞎编
+
+> **给 clone 下来的读者**：仓库里**不含原始 PDF 和索引**（体积大，且原文有版权）。
+> 把你自己的 PDF 放进项目根目录、在 `.env` 里改好 `PDF_PATH` 就能跑；
+> 但切分规则是照着这份文档的结构写的，换成别的文档需要相应调整 `split_into_chunks()`。
 
 ---
 
@@ -21,6 +28,7 @@
 - [五、出问题了怎么查](#五出问题了怎么查)
 - [六、进阶任务](#六进阶任务)
 - [七、怎么把它写进简历](#七怎么把它写进简历)
+- [八、发布到 GitHub](#八发布到-github)
 
 ---
 
@@ -32,7 +40,7 @@
 如果你换了电脑，需要重建：
 
 ```bash
-cd C:\Users\Sun\Desktop\workbuddy\rag-pdf
+cd rag-pdf
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
@@ -444,24 +452,38 @@ PDF 排版时，长标题会折成两行：
 
 ---
 
-## 附：上传到 GitHub（约 3 分钟）
+## 八、发布到 GitHub
 
-本项目已经在本地做好了 git 初始化并完成首次提交（分支 `main`），所以**不需要** `git init`。
+本仓库已经在本地做好 git 初始化并完成提交（分支 `main`），所以**不需要** `git init`。
 
 1. 到 github.com 新建一个**空仓库**，名字填 `rag-pdf`，可见性选 Public，
    **README / .gitignore / License 三个勾全部不要打**（本地已有，线上再生成会冲突）。
 2. 在本项目目录执行（把 `你的用户名` 换成你的 GitHub 用户名）：
 
 ```bash
-cd C:/Users/Sun/Desktop/workbuddy/rag-pdf
+cd rag-pdf
 git remote add origin https://github.com/你的用户名/rag-pdf.git
 git push -u origin main
 ```
 
 3. 第一次 push 会弹出浏览器让你登录 GitHub，点一下授权即可，不用配密码或 token。
 
-**密钥安全**：`.env` 已被 `.gitignore` 排除，提交内容里只有 `.env.example` 模板，不含任何真实 Key。
-`data/`（索引）、`.venv/` 也已排除 —— 别人 clone 后用 `build_index.py` 自己重建即可。
+### 推之前，先确认这三样没被带上
+
+`.gitignore` 已经拦住了，但养成习惯：push 前扫一眼。
+
+| 不该入库的东西 | 为什么 | 怎么拦 |
+|---|---|---|
+| `.env` | **里面有你的真实 API Key**，公开即泄露，会被盗刷 | 已在 `.gitignore`，仓库里只留 `.env.example` 模板 |
+| 原始 PDF | 动辄几十兆，且是第三方版权内容 | 已忽略 `*.pdf` |
+| `data/`、`.venv/` | 索引和依赖都能重建，传上去纯属噪音 | 已忽略 |
+
+一句话自查（输出为空才算干净）：
+
+```bash
+git ls-files | findstr /i "env pdf"   # 除了 .env.example，不该有别的
+git grep -n "sk-" -- .                # 不该出现任何真实 Key
+```
 
 以后改了代码要再推：
 
